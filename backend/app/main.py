@@ -1,9 +1,24 @@
 import chess
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from engine import alpha_beta_minimax
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    # add production domain here once deployed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,            
+    allow_credentials=True,           
+    allow_methods=["*"],              
+    allow_headers=["*"],              
+)
 
 class Move(BaseModel):
     move: str
