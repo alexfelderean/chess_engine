@@ -1,0 +1,15 @@
+.black_square {
+    height: 60px;
+    width: 60px;
+
+    background-color: green;
+
+}
+
+.white_square {
+    height: 60px;
+    width: 60px;
+
+    background-color: whitesmoke;
+
+}
