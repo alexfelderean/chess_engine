@@ -7,7 +7,7 @@ interface SquareProps {
     square: number;
     piece: string;
     index: number
-    onClick: (name: string, square: number, index: number) => void;
+    onClick: () => void;
 }
 
 function Square({color, name, square, piece, index, onClick}: SquareProps) {
@@ -16,17 +16,17 @@ function Square({color, name, square, piece, index, onClick}: SquareProps) {
     if(color == "white") {
         return <div 
                     className={styles.white_square}
-                    onClick={() => onClick(name, square, index)}
+                    onClick={() => onClick()}
                 >
-                    {piece==="pawn" && <p>P</p>}
+                    {piece!=="" && <p>{piece}</p>}
                 </div>
     }
     else {
         return <div 
                     className={styles.black_square}
-                    onClick={() => onClick(name, square, index)}
+                    onClick={() => onClick()}
                 >
-                    {piece==="pawn" && <p>P</p>}
+                    {piece!=="" && <p>{piece}</p>}
                 </div>
     }
 }

@@ -1,13 +1,14 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import './App.css';
-import Square from './components/Square/Square'
-import Board from './components/Board/Board'
+import Game from './components/Game/Game'
+import BoardManager from './components/Board/BoardManager';
 
 function App() {
+  const boardManagerRef = useRef(new BoardManager());
   return (
     <div className="App">
       <header className="App-header">
-        <Board></Board>
+        <Game manager={boardManagerRef.current}/>
       </header>
       
     </div>

@@ -1,35 +1,25 @@
 import React, {useState} from 'react';
 import styles from './Board.module.css'
 import Square from './../Square/Square'
+import BoardManager from './BoardManager'
 
-function Board() {
-    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+interface SquareType {
+    color: string;
+    name: string;
+    square: number;
+    piece: string;
+    index: number
+}
 
-    const [squares, setSquares] = useState(
-        Array.from({length: 64}, (_, i) => {
-        const color = ((Math.floor(i % 8) + Math.floor(i / 8)) % 2 === 0) ? "white" : "black"
-        const name = files[Math.floor(i % 8)] + String(8 - Math.floor(i / 8));
-        const square = (Math.floor((63 - i) / 8) * 8) + 7 - Math.floor((63 - i) % 8);
-        const piece = "";
-        const index = i;
-        return {
-            color, name, square, piece, index,
-        };
-    })
-    );
+interface BoardProps {
+    squares: SquareType[];
+    setSquares: React.Dispatch<React.SetStateAction<SquareType[]>>;
+    handleSquareClick: (index: number) => void;
+}
 
-    function handleSquareClick(name: string, square: number, index: number) {
-        console.log("Square clicked: " + name + ", " + square + ", " + index);
-        addPawn(index);
-    }
+function Board({squares, setSquares, handleSquareClick}: BoardProps) {
 
-    function addPawn(index: number) {
-        setSquares(prev => 
-            prev.map((sq, i) => 
-                i === index ? {...sq, piece: "pawn"} : sq
-            )
-        );
-    }
+    const [needsRender, setNeedsRender] = useState(false);
 
     return (
         <div className={styles.board}>
@@ -40,7 +30,7 @@ function Board() {
                     square={sq.square}
                     piece={sq.piece}
                     index={sq.index}
-                    onClick={() => handleSquareClick(sq.name, sq.square, sq.index)}
+                    onClick={() => handleSquareClick(sq.index)}
                 />
             ))}
         </div>
