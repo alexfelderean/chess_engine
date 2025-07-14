@@ -3,10 +3,12 @@ import {fetchLegalMoves, fetchComputerMove} from '../api/chessAPI';
 class BoardManager {
     board: Array<string>;
     legalMoves: Array<Array<Array<number>>>;
+    highlights: Array<boolean>;
   
     constructor() {
         this.board = new Array(64);
         this.legalMoves = Array.from({ length: 64 }, () => []);
+        this.highlights = Array.from({length: 64}, () => false);
 
         this.setStartingPosition();
     }
@@ -42,16 +44,6 @@ class BoardManager {
         this.board[62] = 'N';
         this.board[63] = 'R';
 
-        await this.setLegalMoves('w');
-    }
-
-    getBoard() {
-        return this.board;
-    }
-
-    async move(from: number, to: number) {
-        this.board[to] = this.board[from];
-        this.board[from] = '';
         await this.setLegalMoves('w');
     }
 
@@ -96,25 +88,17 @@ class BoardManager {
         }
     }
 
-    getLegalMoves() {
-        return this.legalMoves;
-    }
-
     addHighlights(index: number): number {
-        if(!this.legalMoves[index]) return 0;
         let count = 0;
         for(let i = 0; i < this.legalMoves[index].length; i++) {
-            this.board[this.legalMoves[index][i][0]] = this.board[this.legalMoves[index][i][0]] == '' ? '*' : this.board[this.legalMoves[index][i][0]];
+            this.highlights[this.legalMoves[index][i][0]] = true;
             count += 1;
         }
         return count;
     }
 
     removeHighlights(index: number) {
-        if(!this.legalMoves[index]) return;
-        for(let i = 0; i < this.legalMoves[index].length; i++) {
-            this.board[this.legalMoves[index][i][0]] = this.board[this.legalMoves[index][i][0]] == '*' ? '' : this.board[this.legalMoves[index][i][0]];
-        }
+        this.highlights = Array.from({length: 64}, () => false);
     }
 
     isValidMove(from: number, to: number): boolean {

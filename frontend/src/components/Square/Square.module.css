@@ -1,17 +1,26 @@
+.black_square,
+.white_square {
+  position: relative; 
+  height: 70px;
+  width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .black_square {
-    height: 70px;
-    width: 70px;
-
-    background-color: green;
-
-    color: black;
+  background-color: green;
 }
 
 .white_square {
-    height: 70px;
-    width: 70px;
+  background-color: whitesmoke;
+}
 
-    background-color: whitesmoke;
-
-    color: black;
+.dot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(128, 128, 128, 0.4); 
+  border-radius: 50%;
+  z-index: 2;
 }

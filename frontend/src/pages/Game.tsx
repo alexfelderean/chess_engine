@@ -14,12 +14,11 @@ function Game({manager} : GameProps) {
     const [squares, setSquares] = useState(
         Array.from({length: 64}, (_, i) => {
         const color = ((Math.floor(i % 8) + Math.floor(i / 8)) % 2 === 0) ? "white" : "black"
-        const name = files[Math.floor(i % 8)] + String(8 - Math.floor(i / 8));
-        const square = (Math.floor((63 - i) / 8) * 8) + 7 - Math.floor((63 - i) % 8);
         const piece = "";
         const index = i;
+        const highlight = false;
         return {
-            color, name, square, piece, index,
+            color, piece, index, highlight
         };
     }));
 
@@ -48,11 +47,13 @@ function Game({manager} : GameProps) {
     }
 
     function renderBoard() {
-        const board = manager.getBoard();
+        const board = manager.board;
+        const highlights = manager.highlights;
         setSquares(prev => 
             prev.map((sq, i) => ({
                 ...sq, 
                 piece: board[i],
+                highlight: highlights[i],
             }))
         );
     }

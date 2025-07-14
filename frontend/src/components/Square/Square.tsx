@@ -3,32 +3,36 @@ import styles from './Square.module.css'
 
 interface SquareProps {
     color: string;
-    name: string;
-    square: number;
     piece: string;
-    index: number
+    index: number;
+    highlight: boolean;
     onClick: () => void;
 }
 
-function Square({color, name, square, piece, index, onClick}: SquareProps) {
+const img_map: Record<string, string> = {
+    'p': 'bp',
+    'P': 'wp',
+    'r': 'br',
+    'R': 'wr',
+    'n': 'bn',
+    'N': 'wn',
+    'q': 'bq',
+    'Q': 'wq',
+    'k': 'bk',
+    'K': 'wk',
+    'b': 'bb',
+    'B': 'wb'
+};
+
+function Square({color, piece, index, highlight, onClick}: SquareProps) {
     const [sqPiece, setSqPiece] = useState(piece);
 
-    if(color == "white") {
-        return <div 
-                    className={styles.white_square}
-                    onClick={() => onClick()}
-                >
-                    {piece!=="" && <p>{piece}</p>}
-                </div>
-    }
-    else {
-        return <div 
-                    className={styles.black_square}
-                    onClick={() => onClick()}
-                >
-                    {piece!=="" && <p>{piece}</p>}
-                </div>
-    }
+    return (
+        <div className={styles[`${color}_square`]} onClick={() => onClick()}>
+            {highlight && <div className={styles.dot} />}
+            {piece!=="" && <img src={img_map[piece] + '.png'}/>}
+        </div>
+    );
 }
 
 export default React.memo(Square);

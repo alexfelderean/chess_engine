@@ -5,10 +5,9 @@ import BoardManager from '../../logic/BoardManager'
 
 interface SquareType {
     color: string;
-    name: string;
-    square: number;
     piece: string;
-    index: number
+    index: number;
+    highlight: boolean;
 }
 
 interface BoardProps {
@@ -26,10 +25,9 @@ function Board({squares, setSquares, handleSquareClick}: BoardProps) {
             {squares.map((sq) => (
                 <Square
                     color= {sq.color}
-                    name={sq.name}
-                    square={sq.square}
                     piece={sq.piece}
                     index={sq.index}
+                    highlight={sq.highlight}
                     onClick={() => handleSquareClick(sq.index)}
                 />
             ))}
