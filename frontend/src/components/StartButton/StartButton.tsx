@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import styles from './StartButton.module.css'
-import BoardManager from '../Board/BoardManager';
 
 interface StartButtonProps {
     onClick: () => void;

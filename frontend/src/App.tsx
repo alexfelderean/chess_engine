@@ -1,7 +1,7 @@
 import React, {useRef} from 'react';
 import './App.css';
-import Game from './components/Game/Game'
-import BoardManager from './components/Board/BoardManager';
+import Game from './pages/Game';
+import BoardManager from './logic/BoardManager';
 
 function App() {
   const boardManagerRef = useRef(new BoardManager());

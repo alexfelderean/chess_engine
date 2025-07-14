@@ -1,54 +1,49 @@
 import chess
 from fastapi import FastAPI
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from engine import alpha_beta_minimax
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    # add production domain here once deployed
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,            
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"], # add production domain here once deployed
     allow_credentials=True,           
     allow_methods=["*"],              
     allow_headers=["*"],              
 )
 
-class Move(BaseModel):
-    move: str
-    from_square: int
-    to_square: int
-    is_capture: bool
-    promotion: str
+class MakeMoveRequest(BaseModel):
+    board_fen: str
+    max_depth: int
 
-class MoveResponse(BaseModel):
-    computer_move: Move
+class MakeMoveResponse(BaseModel):
+    move: str
+
+class LegalMoveRequest(BaseModel):
+    board_fen: str
+
+class LegalMoveResponse(BaseModel):
     new_legal_moves: list[str]
 
-@app.post("/")
-async def make_move(board_fen: str, max_depth: int):
-    board = chess.Board(board_fen)
-    computer_move = alpha_beta_minimax(board, 0, max_depth)
+@app.post("/make_move", response_model=MakeMoveResponse)
+async def make_move(req: MakeMoveRequest):
+    try:
+        board = chess.Board(req.board_fen)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid FEN")
     
-    isCapture = board.is_capture(computer_move)
-    promotionPiece = computer_move.promotion.piece_name if computer_move.promotion else "None"
+    computer_move = str(alpha_beta_minimax(board, 0, int(req.max_depth)))
     
-    board.push(computer_move)
+    return MakeMoveResponse(move=computer_move)
 
-    new_moves = [str(move) for move in board.legal_moves]
-
-    return MoveResponse(computer_move=
-                        Move(
-                             move=str(computer_move),
-                             from_square=computer_move.from_square,
-                             to_square=computer_move.to_square,
-                             is_capture=isCapture,
-                             promotion=promotionPiece
-                             ),
-                        new_legal_moves=new_moves)
+@app.post("/legal_moves", response_model=LegalMoveResponse)
+async def legal_moves(req: LegalMoveRequest):
+    try:
+        board = chess.Board(req.board_fen)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid FEN")
+    moves = [str(move) for move in board.legal_moves]
+    return LegalMoveResponse(new_legal_moves=moves)

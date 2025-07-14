@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styles from './Board.module.css'
 import Square from './../Square/Square'
-import BoardManager from './BoardManager'
+import BoardManager from '../../logic/BoardManager'
 
 interface SquareType {
     color: string;

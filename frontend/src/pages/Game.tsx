@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import Board from '../Board/Board'
-import StartButton from '../StartButton/StartButton';
-import BoardManager from '../Board/BoardManager'
+import React, {useState, useRef} from 'react';
+import Board from '../components/Board/Board'
+import StartButton from '../components/StartButton/StartButton';
+import BoardManager from '../logic/BoardManager'
 
 interface GameProps {
     manager: BoardManager;
 }
 
 function Game({manager} : GameProps) {
-    let selected = -1;
+    let selected = useRef(-1);
 
     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     const [squares, setSquares] = useState(
@@ -28,12 +28,21 @@ function Game({manager} : GameProps) {
         renderBoard();
     }
 
-    function handleSquareClick(index: number) {
-        if(selected === -1) {
-            selected = index;
+    async function handleSquareClick(index: number) {
+        if(selected.current === -1) {
+            if(manager.addHighlights(index) > 0) {
+                selected.current = index;
+                manager.addHighlights(index);
+                renderBoard();
+            }
         }
         else {
-            manager.move(selected, index);
+            if(manager.isValidMove(selected.current, index)) {
+                manager.makeUserMove(selected.current, index);
+                await manager.makeComputerMove();
+            }
+            manager.removeHighlights(selected.current);
+            selected.current = -1;
             renderBoard(); // triggers a re-render
         }
     }
