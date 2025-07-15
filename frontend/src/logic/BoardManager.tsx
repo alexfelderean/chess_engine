@@ -4,11 +4,13 @@ class BoardManager {
     board: Array<string>;
     legalMoves: Array<Array<Array<number>>>;
     highlights: Array<boolean>;
+    canCastle: Array<string>; // {K, Q, k, q}
   
     constructor() {
         this.board = new Array(64);
         this.legalMoves = Array.from({ length: 64 }, () => []);
         this.highlights = Array.from({length: 64}, () => false);
+        this.canCastle = ['K', 'Q', 'k', 'q'];
 
         this.setStartingPosition();
     }
@@ -69,8 +71,15 @@ class BoardManager {
                 count += 1;
             }
         }
+
+        fen += count > 0 ? count : '';
         
-        fen += ' ' + turn; // indicate black to move change if you want to allow user to play as bloack
+        fen += ' ' + turn + ' '; // indicate black to move change if you want to allow user to play as black
+
+        for(const s of this.canCastle) {
+            fen += s;
+        }
+
         return fen;
     }
 
@@ -78,6 +87,7 @@ class BoardManager {
         const fen = this.generateFenString(turn);
         const moves = await fetchLegalMoves(fen);
         
+        console.log(fen);
         this.legalMoves = Array.from({ length: 64 }, () => []);
 
         for(const move of moves) {
@@ -117,15 +127,79 @@ class BoardManager {
         const from = move.charCodeAt(0) - 'a'.charCodeAt(0) + ((8 - parseInt(move[1], 10)) * 8);
         const to = move.charCodeAt(2) - 'a'.charCodeAt(0) + ((8 - parseInt(move[3], 10)) * 8);
 
-        this.board[to] = this.board[from];
-        this.board[from] = '';
+        if(from === 4 && to === 7) {
+            this.board[6] = 'k';
+            this.board[4] = '';
 
-        this.setLegalMoves('w');
+            this.board[5] = 'r';
+            this.board[7] = ''; 
+        }
+        else if(from === 4 && to === 2) {
+            this.board[2] = 'k';
+            this.board[4] = '';
+
+            this.board[3] = 'r';
+            this.board[0] = '';
+        }
+        else {
+            this.board[to] = this.board[from];
+            this.board[from] = '';
+        }
+
+        if(from === 4) {
+            // white king moved
+            this.canCastle[2] = '';
+            this.canCastle[3] = '';
+        }
+        else if(from === 7) {
+            this.canCastle[2] = '';
+        }
+        else if(from === 0) {
+            this.canCastle[3] = '';
+        }
+
+        await this.setLegalMoves('w');
     }
 
     makeUserMove(from: number, to: number) {
-        this.board[to] = this.board[from];
-        this.board[from] = '';
+        // check if user castled (king side)
+        if(from === 60 && to === 62) {
+            this.board[62] = 'K';
+            this.board[60] = '';
+
+            // move rook to correct square
+            this.board[61] = 'R';
+            this.board[63] = ''; 
+
+        }
+        // queen side
+        else if(from === 60 && to === 58) {
+            this.board[to] = this.board[from];
+            this.board[from] = '';
+
+            // move rook to correct square
+            this.board[59] = this.board[56];
+            this.board[56] = ''; 
+
+        }
+        else {
+            this.board[to] = this.board[from];
+            this.board[from] = '';
+        }
+
+        // keep track of user's castling availability
+        if(from === 60) {
+            // white king moved
+            this.canCastle[0] = '';
+            this.canCastle[1] = '';
+        }
+        else if(from === 63) {
+            this.canCastle[0] = '';
+        }
+        else if(from === 56) {
+            this.canCastle[1] = '';
+        }
+        
     }
 }
   

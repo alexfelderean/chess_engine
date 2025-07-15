@@ -9,6 +9,7 @@ interface GameProps {
 
 function Game({manager} : GameProps) {
     let selected = useRef(-1);
+    let computerRunning = useRef(false);
 
     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     const [squares, setSquares] = useState(
@@ -28,6 +29,8 @@ function Game({manager} : GameProps) {
     }
 
     async function handleSquareClick(index: number) {
+        if(computerRunning.current) return;
+
         if(selected.current === -1) {
             if(manager.addHighlights(index) > 0) {
                 selected.current = index;
@@ -38,11 +41,18 @@ function Game({manager} : GameProps) {
         else {
             if(manager.isValidMove(selected.current, index)) {
                 manager.makeUserMove(selected.current, index);
+                manager.removeHighlights(selected.current);
+                renderBoard();
+                computerRunning.current = true;
                 await manager.makeComputerMove();
+                computerRunning.current = false;
+                renderBoard();
             }
-            manager.removeHighlights(selected.current);
+            else {
+                manager.removeHighlights(selected.current);
+                renderBoard();
+            }
             selected.current = -1;
-            renderBoard(); // triggers a re-render
         }
     }
 
