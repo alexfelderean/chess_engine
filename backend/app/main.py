@@ -45,5 +45,7 @@ async def legal_moves(req: LegalMoveRequest):
         board = chess.Board(req.board_fen)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid FEN")
-    moves = [str(move) for move in board.legal_moves]
-    return LegalMoveResponse(new_legal_moves=moves)
+    
+    legal_moves = list(board.legal_moves)
+    uci_moves = [str(move.uci()) for move in legal_moves]
+    return LegalMoveResponse(new_legal_moves=uci_moves)
