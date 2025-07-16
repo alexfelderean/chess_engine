@@ -14,7 +14,7 @@ function Game({manager} : GameProps) {
     const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     const [squares, setSquares] = useState(
         Array.from({length: 64}, (_, i) => {
-        const color = ((Math.floor(i % 8) + Math.floor(i / 8)) % 2 === 0) ? "white" : "black"
+        const color = ((Math.floor(i % 8) + Math.floor(i / 8)) % 2 === 0) ? "white" : "black";
         const piece = "";
         const index = i;
         const highlight = false;
